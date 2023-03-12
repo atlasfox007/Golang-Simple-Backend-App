@@ -12,7 +12,7 @@ import (
 
 type UserRepository interface {
 	GetAllUsers() ([]model.User, error)
-	GetUserById() (*model.User, error)
+	GetUserByID(id string) (*model.User, error)
 	CreateUser(user *model.User) error
 	UpdateUser(user *model.User) error
 	DeleteUser(id string) error
@@ -28,7 +28,7 @@ func NewUserRepository(collection *mongo.Collection) UserRepository {
 	}
 }
 
-func (r *userRepository) GetAllUsers() ([]User, error) {
+func (r *userRepository) GetAllUsers() ([]model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -38,7 +38,7 @@ func (r *userRepository) GetAllUsers() ([]User, error) {
 	}
 	defer cur.Close(ctx)
 
-	var users []User
+	var users []model.User
 	err = cur.All(ctx, &users)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (r *userRepository) GetAllUsers() ([]User, error) {
 	return users, nil
 }
 
-func (r *userRepository) GetUserByID(id string) (*User, error) {
+func (r *userRepository) GetUserByID(id string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -55,7 +55,7 @@ func (r *userRepository) GetUserByID(id string) (*User, error) {
 		return nil, err
 	}
 
-	var user User
+	var user model.User
 	err = r.collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -66,7 +66,7 @@ func (r *userRepository) GetUserByID(id string) (*User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) CreateUser(user *User) error {
+func (r *userRepository) CreateUser(user *model.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -78,7 +78,7 @@ func (r *userRepository) CreateUser(user *User) error {
 	return err
 }
 
-func (r *userRepository) UpdateUser(user *User) error {
+func (r *userRepository) UpdateUser(user *model.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
