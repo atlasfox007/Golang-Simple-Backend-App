@@ -1,3 +1,3 @@
-module atlasfox007/dagangan-project-test
+module tutorial-webserver
 
 go 1.20
