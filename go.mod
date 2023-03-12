@@ -2,7 +2,10 @@ module github.com/atlasfox007/Golang-Simple-Backend-App
 
 go 1.20
 
-require go.mongodb.org/mongo-driver v1.11.2
+require (
+	github.com/gorilla/mux v1.8.0
+	go.mongodb.org/mongo-driver v1.11.2
+)
 
 require (
 	github.com/golang/snappy v0.0.1 // indirect
