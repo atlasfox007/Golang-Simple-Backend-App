@@ -9,42 +9,23 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/atlasfox007/Golang-Simple-Backend-App/config"
 	"github.com/atlasfox007/Golang-Simple-Backend-App/handler"
 	"github.com/atlasfox007/Golang-Simple-Backend-App/repository"
 	"github.com/atlasfox007/Golang-Simple-Backend-App/services"
 )
 
-const (
-	mongoDBHost     = "localhost"
-	mongoDBPort     = "27017"
-	mongoDBDatabase = "mydatabase"
-)
-
 func main() {
-	// create a MongoDB client
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + mongoDBHost + ":" + mongoDBPort))
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	err = client.Connect(ctx)
+	// Create database connection
+	err := config.InitDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
+	db := config.GetDB()
 	// create a UserRepository implementation using the MongoDB client
-	repo := repository.NewUserRepository(client.Database(mongoDBDatabase).Collection("users"))
+	repo := repository.NewUserRepository(db.Collection("users"))
 
 	// create a UserService implementation using the UserRepository implementation
 	service := services.NewUserService(repo)
@@ -73,7 +54,7 @@ func main() {
 	signal.Notify(interrupt, os.Interrupt)
 	<-interrupt
 	log.Println("Shutting down server...")
-	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
 		log.Fatal(err)
