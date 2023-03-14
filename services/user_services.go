@@ -13,6 +13,7 @@ type UserService interface {
 	CreateUser(user *model.User) error
 	UpdateUser(user *model.User) error
 	DeleteUser(id string) error
+	Login(username string, password string) (string, error)
 }
 
 type userService struct {

@@ -16,6 +16,7 @@ type UserRepository interface {
 	CreateUser(user *model.User) error
 	UpdateUser(user *model.User) error
 	DeleteUser(id string) error
+	GetByUsername(username string) (*model.User, error)
 }
 
 type userRepository struct {
@@ -58,9 +59,18 @@ func (r *userRepository) GetUserByID(id string) (*model.User, error) {
 	var user model.User
 	err = r.collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&user)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) GetByUsername(username string) (*model.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var user model.User
+	err := r.collection.FindOne(ctx, bson.M{"name": username}).Decode(&user)
+	if err != nil {
 		return nil, err
 	}
 	return &user, nil
