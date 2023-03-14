@@ -25,7 +25,7 @@ func main() {
 
 	db := config.GetDB()
 	// create a UserRepository implementation using the MongoDB client
-	repo := repository.NewUserRepository(db.Collection("users"))
+	repo := repository.NewUserRepository(db.Collection("dagangan_collection"))
 
 	// create a UserService implementation using the UserRepository implementation
 	service := services.NewUserService(repo)
