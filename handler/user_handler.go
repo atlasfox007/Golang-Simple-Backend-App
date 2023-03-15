@@ -23,7 +23,7 @@ func NewUserHandler(service services.UserService) *UserHandler {
 func (h *UserHandler) RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/users", h.getAllUsersHandler).Methods("GET")
 	r.HandleFunc("/users/{id}", h.getUserByIDHandler).Methods("GET")
-	r.HandleFunc("/users", h.createUserHandler).Methods("POST")
+	r.HandleFunc("/users/register", h.registerUserHandler).Methods("POST")
 	r.HandleFunc("/users/{id}", h.updateUserHandler).Methods("PUT")
 	r.HandleFunc("/users/{id}", h.deleteUserHandler).Methods("DELETE")
 }
@@ -57,7 +57,7 @@ func (h *UserHandler) getUserByIDHandler(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(user)
 }
 
-func (h *UserHandler) createUserHandler(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -65,13 +65,19 @@ func (h *UserHandler) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = h.service.CreateUser(&user)
+	err = h.service.Register(user.Name, user.Password, user.Email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+
+	message := map[string]string{
+		"success_message": "Users created successfully",
+	}
+
+	json.NewEncoder(w).Encode(message)
 }
 
 func (h *UserHandler) updateUserHandler(w http.ResponseWriter, r *http.Request) {

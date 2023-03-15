@@ -14,6 +14,7 @@ type UserService interface {
 	UpdateUser(user *model.User) error
 	DeleteUser(id string) error
 	Login(username string, password string) (string, error)
+	Register(name string, password string, email string) error
 }
 
 type userService struct {
