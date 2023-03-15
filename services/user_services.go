@@ -40,14 +40,14 @@ func (s *userService) GetUserByID(id string) (*model.User, error) {
 
 func (s *userService) CreateUser(user *model.User) error {
 	if user == nil {
-		return errors.New("User cannot be nil")
+		return errors.New("user cannot be nil")
 	}
 	return s.repo.CreateUser(user)
 }
 
 func (s *userService) UpdateUser(user *model.User) error {
 	if user == nil {
-		return errors.New("User cannot be nil")
+		return errors.New("user cannot be nil")
 	}
 	return s.repo.UpdateUser(user)
 }

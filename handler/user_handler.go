@@ -26,6 +26,37 @@ func (h *UserHandler) RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/users/register", h.registerUserHandler).Methods("POST")
 	r.HandleFunc("/users/{id}", h.updateUserHandler).Methods("PUT")
 	r.HandleFunc("/users/{id}", h.deleteUserHandler).Methods("DELETE")
+	r.HandleFunc("/users/login", h.loginHandler).Methods("POST")
+}
+
+func (h *UserHandler) loginHandler(w http.ResponseWriter, r *http.Request) {
+	var credentials struct {
+		Username string `json:"name"`
+		Password string `json:"password"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&credentials)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Authenticate the user
+	tokenString, err := h.service.Login(credentials.Username, credentials.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	// Return the jwt token to be used
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	message := map[string]string{
+		"token": tokenString,
+	}
+
+	json.NewEncoder(w).Encode(message)
 }
 
 func (h *UserHandler) getAllUsersHandler(w http.ResponseWriter, r *http.Request) {
