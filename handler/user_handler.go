@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/atlasfox007/Golang-Simple-Backend-App/middleware"
 	"github.com/atlasfox007/Golang-Simple-Backend-App/model"
 	"github.com/atlasfox007/Golang-Simple-Backend-App/services"
 	"github.com/gorilla/mux"
@@ -21,11 +22,11 @@ func NewUserHandler(service services.UserService) *UserHandler {
 }
 
 func (h *UserHandler) RegisterRoutes(r *mux.Router) {
-	r.HandleFunc("/users", h.getAllUsersHandler).Methods("GET")
-	r.HandleFunc("/users/{id}", h.getUserByIDHandler).Methods("GET")
+	r.HandleFunc("/users", middleware.IsAuthenticated(h.getAllUsersHandler)).Methods("GET")
+	r.HandleFunc("/users/{id}", middleware.IsAuthenticated(h.getUserByIDHandler)).Methods("GET")
 	r.HandleFunc("/users/register", h.registerUserHandler).Methods("POST")
-	r.HandleFunc("/users/{id}", h.updateUserHandler).Methods("PUT")
-	r.HandleFunc("/users/{id}", h.deleteUserHandler).Methods("DELETE")
+	r.HandleFunc("/users/{id}", middleware.IsAuthenticated(h.updateUserHandler)).Methods("PUT")
+	r.HandleFunc("/users/{id}", middleware.IsAuthenticated(h.deleteUserHandler)).Methods("DELETE")
 	r.HandleFunc("/users/login", h.loginHandler).Methods("POST")
 }
 

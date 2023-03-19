@@ -48,6 +48,8 @@ func (s *userService) Login(name string, password string) (string, error) {
 		return "", errors.New("failed to get the refresh jwt secret")
 	}
 
+	// Sign the token with jwt secret provided
+
 	tokenString, err := token.SignedString([]byte(val))
 	if err != nil {
 		return "", ErrFailedToSignJWTToken
