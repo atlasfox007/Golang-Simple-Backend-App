@@ -1,10 +1,10 @@
-package services
+package user_services
 
 import (
 	"errors"
+	"github.com/atlasfox007/Golang-Simple-Backend-App/repository/user_repository"
 
 	"github.com/atlasfox007/Golang-Simple-Backend-App/model"
-	"github.com/atlasfox007/Golang-Simple-Backend-App/repository"
 )
 
 type UserService interface {
@@ -13,15 +13,13 @@ type UserService interface {
 	CreateUser(user *model.User) error
 	UpdateUser(user *model.User) error
 	DeleteUser(id string) error
-	Login(username string, password string) (string, error)
-	Register(name string, password string, email string) error
 }
 
 type userService struct {
-	repo repository.UserRepository
+	repo user_repository.UserRepository
 }
 
-func NewUserService(repo repository.UserRepository) UserService {
+func NewUserService(repo user_repository.UserRepository) UserService {
 	return &userService{
 		repo: repo,
 	}

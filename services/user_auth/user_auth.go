@@ -1,8 +1,9 @@
-package services
+package user_auth
 
 import (
 	"errors"
 	"fmt"
+	"github.com/atlasfox007/Golang-Simple-Backend-App/repository/user_repository"
 	"os"
 	"time"
 
@@ -20,7 +21,22 @@ var (
 	ErrFailedToSignJWTToken      = errors.New("failed to sign jwt token")
 )
 
-func (s *userService) Login(name string, password string) (string, error) {
+type UserAuth interface {
+	Login(username string, password string) (string, error)
+	Register(name string, password string, email string) error
+}
+
+type userAuth struct {
+	repo user_repository.UserRepository
+}
+
+func NewUserAuthService(repo user_repository.UserRepository) UserAuth {
+	return &userAuth{
+		repo: repo,
+	}
+}
+
+func (s *userAuth) Login(name string, password string) (string, error) {
 	user, err := s.repo.GetByUsername(name)
 
 	if err != nil {
@@ -66,7 +82,7 @@ func (s *userService) Login(name string, password string) (string, error) {
 	return tokenString, nil
 }
 
-func (s *userService) Register(name string, password string, email string) error {
+func (s *userAuth) Register(name string, password string, email string) error {
 	user, err := s.repo.GetByUsername(name)
 	if err != nil {
 		return err

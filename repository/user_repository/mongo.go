@@ -1,35 +1,21 @@
-package repository
+package user_repository
 
 import (
 	"context"
-	"time"
-
 	"github.com/atlasfox007/Golang-Simple-Backend-App/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
-type UserRepository interface {
-	GetAllUsers() ([]model.User, error)
-	GetUserByID(id string) (*model.User, error)
-	CreateUser(user *model.User) error
-	UpdateUser(user *model.User) error
-	DeleteUser(id string) error
-	GetByUsername(username string) (*model.User, error)
-}
-
-type userRepository struct {
-	collection *mongo.Collection
-}
-
-func NewUserRepository(collection *mongo.Collection) UserRepository {
-	return &userRepository{
+func NewUserMongoRepository(collection *mongo.Collection) UserRepository {
+	return &userMongoRepository{
 		collection: collection,
 	}
 }
 
-func (r *userRepository) GetAllUsers() ([]model.User, error) {
+func (r *userMongoRepository) GetAllUsers() ([]model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -47,7 +33,7 @@ func (r *userRepository) GetAllUsers() ([]model.User, error) {
 	return users, nil
 }
 
-func (r *userRepository) GetUserByID(id string) (*model.User, error) {
+func (r *userMongoRepository) GetUserByID(id string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -67,7 +53,7 @@ func (r *userRepository) GetUserByID(id string) (*model.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) GetByUsername(username string) (*model.User, error) {
+func (r *userMongoRepository) GetByUsername(username string) (*model.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -82,7 +68,7 @@ func (r *userRepository) GetByUsername(username string) (*model.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) CreateUser(user *model.User) error {
+func (r *userMongoRepository) CreateUser(user *model.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -94,7 +80,7 @@ func (r *userRepository) CreateUser(user *model.User) error {
 	return err
 }
 
-func (r *userRepository) UpdateUser(user *model.User) error {
+func (r *userMongoRepository) UpdateUser(user *model.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -109,7 +95,7 @@ func (r *userRepository) UpdateUser(user *model.User) error {
 	return err
 }
 
-func (r *userRepository) DeleteUser(id string) error {
+func (r *userMongoRepository) DeleteUser(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

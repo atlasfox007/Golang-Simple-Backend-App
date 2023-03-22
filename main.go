@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"github.com/atlasfox007/Golang-Simple-Backend-App/handler/user_auth_handler"
+	"github.com/atlasfox007/Golang-Simple-Backend-App/handler/user_service_handler"
+	"github.com/atlasfox007/Golang-Simple-Backend-App/repository"
+	"github.com/atlasfox007/Golang-Simple-Backend-App/services"
 	"log"
 	"net/http"
 	"os"
@@ -11,9 +15,6 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/atlasfox007/Golang-Simple-Backend-App/config"
-	"github.com/atlasfox007/Golang-Simple-Backend-App/handler"
-	"github.com/atlasfox007/Golang-Simple-Backend-App/repository"
-	"github.com/atlasfox007/Golang-Simple-Backend-App/services"
 )
 
 func main() {
@@ -25,17 +26,20 @@ func main() {
 
 	db := config.GetDB()
 	// create a UserRepository implementation using the MongoDB client
-	repo := repository.NewUserRepository(db.Collection("dagangan_collection"))
+	//repo := user_repository.NewUserMongoRepository(db.Collection("dagangan_collection"))
+	repo := repository.InitRepositories(db.Collection("dagangan_collection"))
 
 	// create a UserService implementation using the UserRepository implementation
-	service := services.NewUserService(repo)
+	service := services.InitServices(repo)
 
-	// create a UserHandler using the UserService implementation
-	handler := handler.NewUserHandler(service)
+	// create a UserServiceHandler using the UserService implementation
+	userServiceHandler := user_service_handler.NewUserServiceHandler(service.UserServices)
+	userAuthHandler := user_auth_handler.NewUserAuthHandler(service.UserAuth)
 
-	// create a router and register the UserHandler's routes
+	// create a router and register the UserServiceHandler's and UserAuthHandler routes
 	router := mux.NewRouter()
-	handler.RegisterRoutes(router)
+	userServiceHandler.RegisterRoutes(router)
+	userAuthHandler.RegisterRoutes(router)
 
 	// create a server with a graceful shutdown
 	server := &http.Server{
