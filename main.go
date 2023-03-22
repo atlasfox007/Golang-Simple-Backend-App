@@ -49,7 +49,7 @@ func main() {
 		}
 	}()
 
-	// wait for an interrupt signal to shutdown the server gracefully
+	// wait for an interrupt signal to shut down the server gracefully
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 	<-interrupt
